@@ -421,6 +421,72 @@ def to_rgb_uint8(frame: Any) -> np.ndarray:
     return np.ascontiguousarray(array.astype(np.uint8))
 
 
+def compile_inference_mj_model(xml_path: Path):
+    spec = mujoco.MjSpec.from_file(str(xml_path))
+    spec.worldbody.add_geom(
+        name="inference_floor",
+        type=mujoco.mjtGeom.mjGEOM_PLANE,
+        pos=[0.0, 0.0, 0.0],
+        size=[20.0, 20.0, 0.02],
+        rgba=[0.45, 0.47, 0.50, 1.0],
+        contype=0,
+        conaffinity=0,
+    )
+    spec.worldbody.add_light(
+        name="inference_key_light",
+        pos=[0.0, -3.0, 4.0],
+        dir=[0.2, 0.5, -1.0],
+        diffuse=[0.8, 0.8, 0.8],
+        ambient=[0.35, 0.35, 0.35],
+        specular=[0.1, 0.1, 0.1],
+    )
+    return spec.compile()
+
+
+class MujocoLiveViewer:
+    """Interactive GLFW window for qpos playback. Requires MUJOCO_GL=glfw and a DISPLAY."""
+
+    def __init__(
+        self,
+        xml_path: Path,
+        *,
+        camera_distance: float = 3.0,
+        camera_azimuth: float = 135.0,
+        camera_elevation: float = -18.0,
+        expected_qpos_size: int | None = None,
+    ):
+        import mujoco.viewer
+
+        self.model = compile_inference_mj_model(xml_path)
+        self.data = mujoco.MjData(self.model)
+        if expected_qpos_size is not None and self.model.nq != int(expected_qpos_size):
+            raise ValueError(f"Expected live viewer nq={expected_qpos_size}, got nq={self.model.nq}")
+        self._viewer = mujoco.viewer.launch_passive(self.model, self.data)
+        self._viewer.cam.distance = float(camera_distance)
+        self._viewer.cam.azimuth = float(camera_azimuth)
+        self._viewer.cam.elevation = float(camera_elevation)
+        print("[INFO] Opened MuJoCo viewer. Close the window to stop.", flush=True)
+
+    def sync(self, qpos: np.ndarray) -> bool:
+        if not self._viewer.is_running():
+            return False
+        qpos = np.asarray(qpos, dtype=np.float64).reshape(-1)
+        if qpos.size != self.model.nq:
+            raise ValueError(f"Expected qpos size {self.model.nq}, got {qpos.size}")
+        self.data.qpos[:] = qpos
+        self.data.qvel[:] = 0.0
+        mujoco.mj_forward(self.model, self.data)
+        with self._viewer.lock():
+            self._viewer.cam.lookat[:] = [float(qpos[0]), float(qpos[1]), max(float(qpos[2]), 0.75)]
+        self._viewer.sync()
+        return True
+
+    def close(self) -> None:
+        if self._viewer is not None:
+            self._viewer.close()
+            self._viewer = None
+
+
 class MujocoQposRenderer:
     """Pure MuJoCo renderer for qpos playback from an MJCF."""
 
@@ -434,25 +500,7 @@ class MujocoQposRenderer:
         camera_elevation: float = -18.0,
         expected_qpos_size: int | None = None,
     ):
-        spec = mujoco.MjSpec.from_file(str(xml_path))
-        spec.worldbody.add_geom(
-            name="inference_floor",
-            type=mujoco.mjtGeom.mjGEOM_PLANE,
-            pos=[0.0, 0.0, 0.0],
-            size=[20.0, 20.0, 0.02],
-            rgba=[0.45, 0.47, 0.50, 1.0],
-            contype=0,
-            conaffinity=0,
-        )
-        spec.worldbody.add_light(
-            name="inference_key_light",
-            pos=[0.0, -3.0, 4.0],
-            dir=[0.2, 0.5, -1.0],
-            diffuse=[0.8, 0.8, 0.8],
-            ambient=[0.35, 0.35, 0.35],
-            specular=[0.1, 0.1, 0.1],
-        )
-        self.model = spec.compile()
+        self.model = compile_inference_mj_model(xml_path)
         self.model.vis.global_.offwidth = max(int(self.model.vis.global_.offwidth), int(render_size))
         self.model.vis.global_.offheight = max(int(self.model.vis.global_.offheight), int(render_size))
         self.data = mujoco.MjData(self.model)

@@ -8,8 +8,32 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import sys
+import time
 from pathlib import Path
 from typing import Any
+
+
+def _configure_mujoco_gl_before_import() -> None:
+    """GLFW live viewer must be selected before mujoco is imported."""
+    args = sys.argv[1:]
+    headless = True
+    for i, arg in enumerate(args):
+        if arg == "--headless":
+            nxt = args[i + 1] if i + 1 < len(args) else "true"
+            headless = nxt.lower() not in {"false", "0", "no", "off"}
+            break
+        if arg.startswith("--headless="):
+            headless = arg.split("=", 1)[1].lower() not in {"false", "0", "no", "off"}
+            break
+    if headless:
+        return
+    os.environ["MUJOCO_GL"] = "glfw"
+    os.environ.pop("PYOPENGL_PLATFORM", None)
+
+
+_configure_mujoco_gl_before_import()
 
 import joblib
 import mediapy as media
@@ -23,10 +47,12 @@ from humanoidverse.export.backward_encoder import (
     export_backward_encoder_from_model,
 )
 from humanoidverse.mjlab_inference_utils import (
+    MujocoLiveViewer,
     MujocoQposRenderer,
     add_bool_arg,
     checkpoint_load_device,
     load_mjlab_env_cfg,
+    policy_qpos_from_env,
     render_policy_frame,
 )
 from humanoidverse.utils.helpers import export_meta_policy_as_onnx, get_backward_observation
@@ -233,6 +259,21 @@ def run_tracking_inference(
         if save_mp4
         else None
     )
+    live_viewer = None
+    if not headless:
+        if not os.environ.get("DISPLAY"):
+            raise RuntimeError(
+                "Live visualization needs a display. In a graphical terminal run "
+                "`echo $DISPLAY` (should be like :1). Then: unset MUJOCO_GL; "
+                "python -m humanoidverse.tracking_inference --headless false ..."
+            )
+        live_viewer = MujocoLiveViewer(
+            robot_xml,
+            camera_distance=camera_distance,
+            camera_azimuth=camera_azimuth,
+            camera_elevation=camera_elevation,
+            expected_qpos_size=7 + num_dof,
+        )
     try:
         for motion_id in motion_list:
             backward_obs, obs_dict = get_backward_observation(env, motion_id, use_root_height_obs=use_root_height_obs)
@@ -268,6 +309,13 @@ def run_tracking_inference(
                     expert_frame = _resize_nearest(expert_frame, policy_frame.shape[0], policy_frame.shape[1])
                     frames.append(np.concatenate([expert_frame, policy_frame], axis=1))
 
+                if live_viewer is not None:
+                    policy_qpos = policy_qpos_from_env(wrapped_env, expected_qpos_size=live_viewer.model.nq)
+                    if not live_viewer.sync(policy_qpos):
+                        print("[INFO] Viewer closed; stopping rollout.")
+                        return
+                    time.sleep(max(0.0, 1.0 / max(int(fps), 1)))
+
                 if step == 0 or (step + 1) == episode_len or (log_every_steps > 0 and (step + 1) % log_every_steps == 0):
                     print(f"[INFO] motion_id={motion_id} rollout/render progress {step + 1}/{episode_len}", flush=True)
 
@@ -282,6 +330,8 @@ def run_tracking_inference(
                 media.write_video(str(video_path), frames, fps=fps)
                 print(f"[INFO] Saved side-by-side video: {video_path}")
     finally:
+        if live_viewer is not None:
+            live_viewer.close()
         if expert_renderer is not None:
             expert_renderer.close()
         wrapped_env.close()
@@ -295,7 +345,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data-manifest", type=Path, default=None, help="Motion data manifest. Use with --dataset.")
     parser.add_argument("--dataset", default=None, help="Dataset name inside --data-manifest for tracking inference.")
     parser.add_argument("--rebuild-motion-cache", action="store_true", help="Rebuild manifest-generated motion pkl cache.")
-    add_bool_arg(parser, "--headless", True, "Run MuJoCo in headless mode.")
+    add_bool_arg(parser, "--headless", True, "If false, open a live MuJoCo GLFW window (no video required).")
     parser.add_argument("--device", default="cuda:0")
     add_bool_arg(parser, "--save-mp4", False, "Save side-by-side expert/policy MP4.")
     add_bool_arg(parser, "--disable-dr", False, "Disable domain randomization.")
