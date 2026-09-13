@@ -1,0 +1,863 @@
+name: astron
+xml_path: /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/assets/robot_description/mjcf/walker_astron_v1.xml
+base_body: base_link
+root_quat_order: xyzw
+coordinate_system: z_up
+dof_unit: rad
+control_joints:
+  mode: explicit
+  names:
+    - L_hip_pitch_joint
+    - L_hip_roll_joint
+    - L_hip_yaw_joint
+    - L_knee_pitch_joint
+    - L_ankle_pitch_joint
+    - L_ankle_roll_joint
+    - R_hip_pitch_joint
+    - R_hip_roll_joint
+    - R_hip_yaw_joint
+    - R_knee_pitch_joint
+    - R_ankle_pitch_joint
+    - R_ankle_roll_joint
+    - waist_yaw_joint
+    - waist_pitch_joint
+    - waist_roll_joint
+    - L_shoulder_pitch_joint
+    - L_shoulder_roll_joint
+    - L_shoulder_yaw_joint
+    - L_elbow_pitch_joint
+    - L_elbow_yaw_joint
+    - L_wrist_pitch_joint
+    - L_wrist_roll_joint
+    - R_shoulder_pitch_joint
+    - R_shoulder_roll_joint
+    - R_shoulder_yaw_joint
+    - R_elbow_pitch_joint
+    - R_elbow_yaw_joint
+    - R_wrist_pitch_joint
+    - R_wrist_roll_joint
+feet:
+  - L_ankle_roll_link
+  - R_ankle_roll_link
+hands:
+  - L_wrist_roll_link
+  - R_wrist_roll_link
+key_bodies:
+  - base_link
+  - L_ankle_roll_link
+  - R_ankle_roll_link
+  - waist_yaw_link
+  - waist_pitch_link
+  - waist_roll_link
+  - torso_link
+  - L_wrist_roll_link
+  - R_wrist_roll_link
+default_dof_pos: {}
+training:
+  hydra_robot: astron/astron_auto
+  hydra_overrides: []
+  semantics:
+    contact_bodies:
+      - L_ankle_roll_link
+      - R_ankle_roll_link
+    undesired_contact_bodies:
+      - L_hip_pitch_link
+      - L_hip_roll_link
+      - L_hip_yaw_link
+      - R_hip_pitch_link
+      - R_hip_roll_link
+      - R_hip_yaw_link
+      - torso_link
+      - L_shoulder_pitch_link
+      - L_shoulder_roll_link
+      - L_shoulder_yaw_link
+      - R_shoulder_pitch_link
+      - R_shoulder_roll_link
+      - R_shoulder_yaw_link
+    torso_name: torso_link
+    left_ankle_dof_names:
+      - L_ankle_pitch_joint
+      - L_ankle_roll_joint
+    right_ankle_dof_names:
+      - R_ankle_pitch_joint
+      - R_ankle_roll_joint
+  init_state:
+    pos:
+      - 0.0
+      - 0.0
+      - 0.9
+    rot:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+    lin_vel:
+      - 0.0
+      - 0.0
+      - 0.0
+    ang_vel:
+      - 0.0
+      - 0.0
+      - 0.0
+    default_joint_angles:
+      L_hip_pitch_joint: -0.1
+      L_hip_roll_joint: 0.015
+      L_hip_yaw_joint: 0.0
+      L_knee_pitch_joint: 0.2
+      L_ankle_pitch_joint: -0.1
+      L_ankle_roll_joint: 0.0
+      R_hip_pitch_joint: -0.1
+      R_hip_roll_joint: -0.015
+      R_hip_yaw_joint: 0.0
+      R_knee_pitch_joint: 0.2
+      R_ankle_pitch_joint: -0.1
+      R_ankle_roll_joint: 0.0
+      waist_yaw_joint: 0.0
+      waist_pitch_joint: 0.0
+      waist_roll_joint: 0.0
+      L_shoulder_pitch_joint: 0.0
+      L_shoulder_roll_joint: 0.087
+      L_shoulder_yaw_joint: 0.0
+      L_elbow_pitch_joint: 0.0
+      L_elbow_yaw_joint: 0.0
+      L_wrist_pitch_joint: 0.0
+      L_wrist_roll_joint: 0.0
+      R_shoulder_pitch_joint: 0.0
+      R_shoulder_roll_joint: -0.087
+      R_shoulder_yaw_joint: 0.0
+      R_elbow_pitch_joint: 0.0
+      R_elbow_yaw_joint: 0.0
+      R_wrist_pitch_joint: 0.0
+      R_wrist_roll_joint: 0.0
+  control:
+    action_scale: 0.5
+    action_clip_value: 5.0
+    normalize_action_to: 5.0
+    effort_limit_scale: 1.0
+    effort_limit:
+      - 210.0
+      - 165.0
+      - 110.0
+      - 210.0
+      - 60.0
+      - 60.0
+      - 210.0
+      - 165.0
+      - 110.0
+      - 210.0
+      - 60.0
+      - 60.0
+      - 63.0
+      - 165.0
+      - 110.0
+      - 60.0
+      - 60.0
+      - 25.0
+      - 25.0
+      - 25.0
+      - 6.0
+      - 6.0
+      - 60.0
+      - 60.0
+      - 25.0
+      - 25.0
+      - 25.0
+      - 6.0
+      - 6.0
+    velocity_limit:
+      - 10.47
+      - 8.9
+      - 10.47
+      - 10.47
+      - 12.57
+      - 12.57
+      - 10.47
+      - 8.9
+      - 10.47
+      - 10.47
+      - 12.57
+      - 12.57
+      - 10.47
+      - 8.9
+      - 10.47
+      - 13.61
+      - 13.61
+      - 13.61
+      - 13.61
+      - 13.61
+      - 12.57
+      - 12.57
+      - 13.61
+      - 13.61
+      - 13.61
+      - 13.61
+      - 13.61
+      - 12.57
+      - 12.57
+    stiffness:
+      L_hip_pitch_joint: 500.0
+      L_hip_roll_joint: 400.0
+      L_hip_yaw_joint: 200.0
+      L_knee_pitch_joint: 300.0
+      L_ankle_pitch_joint: 100.0
+      L_ankle_roll_joint: 100.0
+      R_hip_pitch_joint: 500.0
+      R_hip_roll_joint: 400.0
+      R_hip_yaw_joint: 200.0
+      R_knee_pitch_joint: 300.0
+      R_ankle_pitch_joint: 100.0
+      R_ankle_roll_joint: 100.0
+      waist_yaw_joint: 200.0
+      waist_pitch_joint: 300.0
+      waist_roll_joint: 300.0
+      L_shoulder_pitch_joint: 160.0
+      L_shoulder_roll_joint: 160.0
+      L_shoulder_yaw_joint: 45.0
+      L_elbow_pitch_joint: 50.0
+      L_elbow_yaw_joint: 40.0
+      L_wrist_pitch_joint: 15.0
+      L_wrist_roll_joint: 15.0
+      R_shoulder_pitch_joint: 160.0
+      R_shoulder_roll_joint: 160.0
+      R_shoulder_yaw_joint: 45.0
+      R_elbow_pitch_joint: 50.0
+      R_elbow_yaw_joint: 40.0
+      R_wrist_pitch_joint: 15.0
+      R_wrist_roll_joint: 15.0
+    damping:
+      L_hip_pitch_joint: 50.0
+      L_hip_roll_joint: 50.0
+      L_hip_yaw_joint: 8.0
+      L_knee_pitch_joint: 10.0
+      L_ankle_pitch_joint: 3.0
+      L_ankle_roll_joint: 3.0
+      R_hip_pitch_joint: 50.0
+      R_hip_roll_joint: 50.0
+      R_hip_yaw_joint: 8.0
+      R_knee_pitch_joint: 10.0
+      R_ankle_pitch_joint: 3.0
+      R_ankle_roll_joint: 3.0
+      waist_yaw_joint: 15.0
+      waist_pitch_joint: 15.0
+      waist_roll_joint: 15.0
+      L_shoulder_pitch_joint: 4.0
+      L_shoulder_roll_joint: 4.0
+      L_shoulder_yaw_joint: 2.0
+      L_elbow_pitch_joint: 2.0
+      L_elbow_yaw_joint: 1.2
+      L_wrist_pitch_joint: 1.0
+      L_wrist_roll_joint: 1.0
+      R_shoulder_pitch_joint: 4.0
+      R_shoulder_roll_joint: 4.0
+      R_shoulder_yaw_joint: 2.0
+      R_elbow_pitch_joint: 2.0
+      R_elbow_yaw_joint: 1.2
+      R_wrist_pitch_joint: 1.0
+      R_wrist_roll_joint: 1.0
+  actuator:
+    source: yaml
+    joints:
+      L_hip_pitch_joint:
+        effort_limit: 210.0
+        velocity_limit: 10.47
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_hip_roll_joint:
+        effort_limit: 165.0
+        velocity_limit: 8.9
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_hip_yaw_joint:
+        effort_limit: 110.0
+        velocity_limit: 10.47
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_knee_pitch_joint:
+        effort_limit: 210.0
+        velocity_limit: 10.47
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_ankle_pitch_joint:
+        effort_limit: 60.0
+        velocity_limit: 12.57
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_ankle_roll_joint:
+        effort_limit: 60.0
+        velocity_limit: 12.57
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_hip_pitch_joint:
+        effort_limit: 210.0
+        velocity_limit: 10.47
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_hip_roll_joint:
+        effort_limit: 165.0
+        velocity_limit: 8.9
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_hip_yaw_joint:
+        effort_limit: 110.0
+        velocity_limit: 10.47
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_knee_pitch_joint:
+        effort_limit: 210.0
+        velocity_limit: 10.47
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_ankle_pitch_joint:
+        effort_limit: 60.0
+        velocity_limit: 12.57
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_ankle_roll_joint:
+        effort_limit: 60.0
+        velocity_limit: 12.57
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      waist_yaw_joint:
+        effort_limit: 63.0
+        velocity_limit: 10.47
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      waist_pitch_joint:
+        effort_limit: 165.0
+        velocity_limit: 8.9
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      waist_roll_joint:
+        effort_limit: 110.0
+        velocity_limit: 10.47
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_shoulder_pitch_joint:
+        effort_limit: 60.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_shoulder_roll_joint:
+        effort_limit: 60.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_shoulder_yaw_joint:
+        effort_limit: 25.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_elbow_pitch_joint:
+        effort_limit: 25.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_elbow_yaw_joint:
+        effort_limit: 25.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_wrist_pitch_joint:
+        effort_limit: 6.0
+        velocity_limit: 12.57
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      L_wrist_roll_joint:
+        effort_limit: 6.0
+        velocity_limit: 12.57
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_shoulder_pitch_joint:
+        effort_limit: 60.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_shoulder_roll_joint:
+        effort_limit: 60.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_shoulder_yaw_joint:
+        effort_limit: 25.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_elbow_pitch_joint:
+        effort_limit: 25.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_elbow_yaw_joint:
+        effort_limit: 25.0
+        velocity_limit: 13.61
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_wrist_pitch_joint:
+        effort_limit: 6.0
+        velocity_limit: 12.57
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+      R_wrist_roll_joint:
+        effort_limit: 6.0
+        velocity_limit: 12.57
+        armature: 0.01
+        friction: 0.0
+        damping: 0.0
+metadata:
+  generated_from_xml: /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/assets/robot_description/mjcf/walker_astron_v1.xml
+  generated_by: humanoidverse.tools.robot_inspect
+  review_status: draft
+  warnings:
+    - MuJoCo XML remains the source of truth for qpos/qvel/action layout and actuator
+      order; URDF is used only for auxiliary draft hints.
+    - Joint 'L_hip_pitch_joint' effort_limit from URDF joint 'L_hip_pitch_joint'.
+    - Joint 'L_hip_pitch_joint' velocity_limit from URDF joint 'L_hip_pitch_joint'.
+    - Joint 'L_hip_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_hip_roll_joint' effort_limit from URDF joint 'L_hip_roll_joint'.
+    - Joint 'L_hip_roll_joint' velocity_limit from URDF joint 'L_hip_roll_joint'.
+    - Joint 'L_hip_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_hip_yaw_joint' effort_limit from URDF joint 'L_hip_yaw_joint'.
+    - Joint 'L_hip_yaw_joint' velocity_limit from URDF joint 'L_hip_yaw_joint'.
+    - Joint 'L_hip_yaw_joint' has zero XML armature; using armature_default=0.01.
+    - URDF limits for 'L_knee_pitch_joint' differ from XML limits; keeping XML limits
+      because MuJoCo XML is the default source of truth.
+    - Joint 'L_knee_pitch_joint' effort_limit from URDF joint 'L_knee_pitch_joint'.
+    - Joint 'L_knee_pitch_joint' velocity_limit from URDF joint 'L_knee_pitch_joint'.
+    - Joint 'L_knee_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_ankle_pitch_joint' effort_limit from URDF joint 'L_ankle_pitch_joint'.
+    - Joint 'L_ankle_pitch_joint' velocity_limit from URDF joint 'L_ankle_pitch_joint'.
+    - Joint 'L_ankle_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_ankle_roll_joint' effort_limit from URDF joint 'L_ankle_roll_joint'.
+    - Joint 'L_ankle_roll_joint' velocity_limit from URDF joint 'L_ankle_roll_joint'.
+    - Joint 'L_ankle_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_hip_pitch_joint' effort_limit from URDF joint 'R_hip_pitch_joint'.
+    - Joint 'R_hip_pitch_joint' velocity_limit from URDF joint 'R_hip_pitch_joint'.
+    - Joint 'R_hip_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_hip_roll_joint' effort_limit from URDF joint 'R_hip_roll_joint'.
+    - Joint 'R_hip_roll_joint' velocity_limit from URDF joint 'R_hip_roll_joint'.
+    - Joint 'R_hip_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_hip_yaw_joint' effort_limit from URDF joint 'R_hip_yaw_joint'.
+    - Joint 'R_hip_yaw_joint' velocity_limit from URDF joint 'R_hip_yaw_joint'.
+    - Joint 'R_hip_yaw_joint' has zero XML armature; using armature_default=0.01.
+    - URDF limits for 'R_knee_pitch_joint' differ from XML limits; keeping XML limits
+      because MuJoCo XML is the default source of truth.
+    - Joint 'R_knee_pitch_joint' effort_limit from URDF joint 'R_knee_pitch_joint'.
+    - Joint 'R_knee_pitch_joint' velocity_limit from URDF joint 'R_knee_pitch_joint'.
+    - Joint 'R_knee_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_ankle_pitch_joint' effort_limit from URDF joint 'R_ankle_pitch_joint'.
+    - Joint 'R_ankle_pitch_joint' velocity_limit from URDF joint 'R_ankle_pitch_joint'.
+    - Joint 'R_ankle_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_ankle_roll_joint' effort_limit from URDF joint 'R_ankle_roll_joint'.
+    - Joint 'R_ankle_roll_joint' velocity_limit from URDF joint 'R_ankle_roll_joint'.
+    - Joint 'R_ankle_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'waist_yaw_joint' effort_limit from URDF joint 'waist_yaw_joint'.
+    - Joint 'waist_yaw_joint' velocity_limit from URDF joint 'waist_yaw_joint'.
+    - Joint 'waist_yaw_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'waist_pitch_joint' effort_limit from URDF joint 'waist_pitch_joint'.
+    - Joint 'waist_pitch_joint' velocity_limit from URDF joint 'waist_pitch_joint'.
+    - Joint 'waist_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'waist_roll_joint' effort_limit from URDF joint 'waist_roll_joint'.
+    - Joint 'waist_roll_joint' velocity_limit from URDF joint 'waist_roll_joint'.
+    - Joint 'waist_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_shoulder_pitch_joint' effort_limit from URDF joint 'L_shoulder_pitch_joint'.
+    - Joint 'L_shoulder_pitch_joint' velocity_limit from URDF joint 'L_shoulder_pitch_joint'.
+    - Joint 'L_shoulder_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_shoulder_roll_joint' effort_limit from URDF joint 'L_shoulder_roll_joint'.
+    - Joint 'L_shoulder_roll_joint' velocity_limit from URDF joint 'L_shoulder_roll_joint'.
+    - Joint 'L_shoulder_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_shoulder_yaw_joint' effort_limit from URDF joint 'L_shoulder_yaw_joint'.
+    - Joint 'L_shoulder_yaw_joint' velocity_limit from URDF joint 'L_shoulder_yaw_joint'.
+    - Joint 'L_shoulder_yaw_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_elbow_pitch_joint' effort_limit from URDF joint 'L_elbow_pitch_joint'.
+    - Joint 'L_elbow_pitch_joint' velocity_limit from URDF joint 'L_elbow_pitch_joint'.
+    - Joint 'L_elbow_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_elbow_yaw_joint' effort_limit from URDF joint 'L_elbow_yaw_joint'.
+    - Joint 'L_elbow_yaw_joint' velocity_limit from URDF joint 'L_elbow_yaw_joint'.
+    - Joint 'L_elbow_yaw_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_wrist_pitch_joint' effort_limit from URDF joint 'L_wrist_pitch_joint'.
+    - Joint 'L_wrist_pitch_joint' velocity_limit from URDF joint 'L_wrist_pitch_joint'.
+    - Joint 'L_wrist_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'L_wrist_roll_joint' effort_limit from URDF joint 'L_wrist_roll_joint'.
+    - Joint 'L_wrist_roll_joint' velocity_limit from URDF joint 'L_wrist_roll_joint'.
+    - Joint 'L_wrist_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_shoulder_pitch_joint' effort_limit from URDF joint 'R_shoulder_pitch_joint'.
+    - Joint 'R_shoulder_pitch_joint' velocity_limit from URDF joint 'R_shoulder_pitch_joint'.
+    - Joint 'R_shoulder_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_shoulder_roll_joint' effort_limit from URDF joint 'R_shoulder_roll_joint'.
+    - Joint 'R_shoulder_roll_joint' velocity_limit from URDF joint 'R_shoulder_roll_joint'.
+    - Joint 'R_shoulder_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_shoulder_yaw_joint' effort_limit from URDF joint 'R_shoulder_yaw_joint'.
+    - Joint 'R_shoulder_yaw_joint' velocity_limit from URDF joint 'R_shoulder_yaw_joint'.
+    - Joint 'R_shoulder_yaw_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_elbow_pitch_joint' effort_limit from URDF joint 'R_elbow_pitch_joint'.
+    - Joint 'R_elbow_pitch_joint' velocity_limit from URDF joint 'R_elbow_pitch_joint'.
+    - Joint 'R_elbow_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_elbow_yaw_joint' effort_limit from URDF joint 'R_elbow_yaw_joint'.
+    - Joint 'R_elbow_yaw_joint' velocity_limit from URDF joint 'R_elbow_yaw_joint'.
+    - Joint 'R_elbow_yaw_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_wrist_pitch_joint' effort_limit from URDF joint 'R_wrist_pitch_joint'.
+    - Joint 'R_wrist_pitch_joint' velocity_limit from URDF joint 'R_wrist_pitch_joint'.
+    - Joint 'R_wrist_pitch_joint' has zero XML armature; using armature_default=0.01.
+    - Joint 'R_wrist_roll_joint' effort_limit from URDF joint 'R_wrist_roll_joint'.
+    - Joint 'R_wrist_roll_joint' velocity_limit from URDF joint 'R_wrist_roll_joint'.
+    - Joint 'R_wrist_roll_joint' has zero XML armature; using armature_default=0.01.
+    - Could not infer any left/right symmetric DOF pairs from XML control_joint_names.
+    - 'Could not infer right-side symmetric counterparts for joints: [''L_hip_pitch_joint'',
+      ''L_hip_roll_joint'', ''L_hip_yaw_joint'', ''L_knee_pitch_joint'', ''L_ankle_pitch_joint'',
+      ''L_ankle_roll_joint'', ''L_shoulder_pitch_joint'', ''L_shoulder_roll_joint'',
+      ''L_shoulder_yaw_joint'', ''L_elbow_pitch_joint'', ''L_elbow_yaw_joint'', ''L_wrist_pitch_joint'',
+      ''L_wrist_roll_joint'']'
+    - symmetric_dofs_idx is emitted as draft metadata only; current training/inference
+      does not consume it.
+    - No stand/default/home/init keyframe found; using model.qpos0 for default pose.
+    - PD gains generated from 'humanoid' draft template; tune stiffness/damping before
+      training.
+    - This config is XML-derived draft output. Review semantic fields, PD gains, default
+      pose, actuator parameters, contact bodies, and reward/termination-related fields
+      before formal training.
+  urdf_source: /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/assets/robot_description/urdf/astron/astron.urdf
+  matched_urdf_joints:
+    - L_hip_pitch_joint
+    - L_hip_roll_joint
+    - L_hip_yaw_joint
+    - L_knee_pitch_joint
+    - L_ankle_pitch_joint
+    - L_ankle_roll_joint
+    - R_hip_pitch_joint
+    - R_hip_roll_joint
+    - R_hip_yaw_joint
+    - R_knee_pitch_joint
+    - R_ankle_pitch_joint
+    - R_ankle_roll_joint
+    - waist_yaw_joint
+    - waist_pitch_joint
+    - waist_roll_joint
+    - L_shoulder_pitch_joint
+    - L_shoulder_roll_joint
+    - L_shoulder_yaw_joint
+    - L_elbow_pitch_joint
+    - L_elbow_yaw_joint
+    - L_wrist_pitch_joint
+    - L_wrist_roll_joint
+    - R_shoulder_pitch_joint
+    - R_shoulder_roll_joint
+    - R_shoulder_yaw_joint
+    - R_elbow_pitch_joint
+    - R_elbow_yaw_joint
+    - R_wrist_pitch_joint
+    - R_wrist_roll_joint
+  semantic_hints:
+    joints:
+      L_hip_pitch_joint:
+        - hip
+        - left
+      L_hip_roll_joint:
+        - hip
+        - left
+      L_hip_yaw_joint:
+        - hip
+        - left
+      L_knee_pitch_joint:
+        - hip
+        - knee
+        - left
+      L_ankle_pitch_joint:
+        - ankle
+        - knee
+        - left
+      L_ankle_roll_joint:
+        - ankle
+        - left
+      R_hip_pitch_joint:
+        - hip
+        - right
+      R_hip_roll_joint:
+        - hip
+        - right
+      R_hip_yaw_joint:
+        - hip
+        - right
+      R_knee_pitch_joint:
+        - hip
+        - knee
+        - right
+      R_ankle_pitch_joint:
+        - ankle
+        - knee
+        - right
+      R_ankle_roll_joint:
+        - ankle
+        - right
+      L_shoulder_pitch_joint:
+        - left
+        - shoulder
+      L_shoulder_roll_joint:
+        - left
+        - shoulder
+      L_shoulder_yaw_joint:
+        - left
+        - shoulder
+      L_elbow_pitch_joint:
+        - elbow
+        - left
+        - shoulder
+      L_elbow_yaw_joint:
+        - elbow
+        - left
+      L_wrist_pitch_joint:
+        - elbow
+        - left
+        - wrist
+      L_wrist_roll_joint:
+        - left
+        - wrist
+      R_shoulder_pitch_joint:
+        - right
+        - shoulder
+      R_shoulder_roll_joint:
+        - right
+        - shoulder
+      R_shoulder_yaw_joint:
+        - right
+        - shoulder
+      R_elbow_pitch_joint:
+        - elbow
+        - right
+        - shoulder
+      R_elbow_yaw_joint:
+        - elbow
+        - right
+      R_wrist_pitch_joint:
+        - elbow
+        - right
+        - wrist
+      R_wrist_roll_joint:
+        - right
+        - wrist
+    links:
+      L_hip_pitch_link:
+        - hip
+        - left
+      L_hip_roll_link:
+        - hip
+        - left
+      L_hip_yaw_link:
+        - hip
+        - left
+      L_knee_pitch_link:
+        - knee
+        - left
+      L_ankle_pitch_link:
+        - ankle
+        - left
+      L_ankle_roll_link:
+        - ankle
+        - left
+      R_hip_pitch_link:
+        - hip
+        - right
+      R_hip_roll_link:
+        - hip
+        - right
+      R_hip_yaw_link:
+        - hip
+        - right
+      R_knee_pitch_link:
+        - knee
+        - right
+      R_ankle_pitch_link:
+        - ankle
+        - right
+      R_ankle_roll_link:
+        - ankle
+        - right
+      L_arm_base_link:
+        - left
+      L_shoulder_pitch_link:
+        - left
+        - shoulder
+      L_shoulder_roll_link:
+        - left
+        - shoulder
+      L_shoulder_yaw_link:
+        - left
+        - shoulder
+      L_elbow_pitch_link:
+        - elbow
+        - left
+      L_elbow_yaw_link:
+        - elbow
+        - left
+      L_wrist_pitch_link:
+        - left
+        - wrist
+      L_wrist_roll_link:
+        - left
+        - wrist
+      R_arm_base_link:
+        - right
+      R_shoulder_pitch_link:
+        - right
+        - shoulder
+      R_shoulder_roll_link:
+        - right
+        - shoulder
+      R_shoulder_yaw_link:
+        - right
+        - shoulder
+      R_elbow_pitch_link:
+        - elbow
+        - right
+      R_elbow_yaw_link:
+        - elbow
+        - right
+      R_wrist_pitch_link:
+        - right
+        - wrist
+      R_wrist_roll_link:
+        - right
+        - wrist
+  merge_policy:
+    source_of_truth: mujoco_xml
+    urdf_used_for:
+      - effort_limit
+      - velocity_limit
+      - damping
+      - friction
+      - semantic_hints
+      - symmetric_dofs_idx_draft
+    prefer_urdf_limits: false
+    prefer_urdf_dynamics: true
+  symmetric_dofs_idx_draft:
+    pairs: []
+    index_pairs: []
+    unmatched_left_joints:
+      - L_hip_pitch_joint
+      - L_hip_roll_joint
+      - L_hip_yaw_joint
+      - L_knee_pitch_joint
+      - L_ankle_pitch_joint
+      - L_ankle_roll_joint
+      - L_shoulder_pitch_joint
+      - L_shoulder_roll_joint
+      - L_shoulder_yaw_joint
+      - L_elbow_pitch_joint
+      - L_elbow_yaw_joint
+      - L_wrist_pitch_joint
+      - L_wrist_roll_joint
+  merged_joint_ranges:
+    L_hip_pitch_joint:
+      - -2.98
+      - 2.53
+    L_hip_roll_joint:
+      - -0.314
+      - 2.059
+    L_hip_yaw_joint:
+      - -2.146
+      - 3.246
+    L_knee_pitch_joint:
+      - -0.0
+      - 2.478
+    L_ankle_pitch_joint:
+      - -1.012
+      - 0.488
+    L_ankle_roll_joint:
+      - -0.401
+      - 0.401
+    R_hip_pitch_joint:
+      - -2.98
+      - 2.53
+    R_hip_roll_joint:
+      - -2.059
+      - 0.314
+    R_hip_yaw_joint:
+      - -3.246
+      - 2.146
+    R_knee_pitch_joint:
+      - -0.0
+      - 2.478
+    R_ankle_pitch_joint:
+      - -1.012
+      - 0.488
+    R_ankle_roll_joint:
+      - -0.401
+      - 0.401
+    waist_yaw_joint:
+      - -2.792
+      - 2.792
+    waist_pitch_joint:
+      - -0.017
+      - 1.221
+    waist_roll_joint:
+      - -0.75
+      - 0.75
+    L_shoulder_pitch_joint:
+      - -3.089
+      - 2.565
+    L_shoulder_roll_joint:
+      - -0.139
+      - 1.884
+    L_shoulder_yaw_joint:
+      - -2.844
+      - 2.844
+    L_elbow_pitch_joint:
+      - -2.2689
+      - 0.104
+    L_elbow_yaw_joint:
+      - -2.844
+      - 2.844
+    L_wrist_pitch_joint:
+      - -0.68
+      - 0.68
+    L_wrist_roll_joint:
+      - -1.57
+      - 1.57
+    R_shoulder_pitch_joint:
+      - -3.089
+      - 2.565
+    R_shoulder_roll_joint:
+      - -1.884
+      - 0.139
+    R_shoulder_yaw_joint:
+      - -2.844
+      - 2.844
+    R_elbow_pitch_joint:
+      - -2.2689
+      - 0.104
+    R_elbow_yaw_joint:
+      - -2.844
+      - 2.844
+    R_wrist_pitch_joint:
+      - -0.68
+      - 0.68
+    R_wrist_roll_joint:
+      - -1.57
+      - 1.57

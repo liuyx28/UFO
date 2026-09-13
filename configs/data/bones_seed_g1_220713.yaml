@@ -1,0 +1,11 @@
+# Bones-SEED G1 day 220713 → UFO ufo_pkl (from gear_sonic convert_soma_csv_to_motion_lib)
+# Train with:
+#   ./run_train.sh --agent fb --robot-config configs/robots/g1_29dof.yaml \
+#     --data-manifest configs/data/bones_seed_g1_220713.yaml --gpu-ids single
+datasets:
+  - name: bones_seed_g1_220713
+    format: ufo_pkl
+    train_path: humanoidverse/data/bones_seed_g1_220713/train_near10s_ufo.pkl
+    # optional: full unclipped motions (for tracking / custom scripts)
+    inference_path: humanoidverse/data/bones_seed_g1_220713/full_ufo.pkl
+    weight: 1.0

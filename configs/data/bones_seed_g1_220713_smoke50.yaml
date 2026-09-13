@@ -1,0 +1,8 @@
+# Bones-SEED G1 220713 小子集，给 8GB 显卡 debug / smoke 用
+# 从 train_near10s_ufo.pkl 前 50 条裁出
+datasets:
+  - name: bones_seed_g1_220713_smoke50
+    format: ufo_pkl
+    train_path: humanoidverse/data/bones_seed_g1_220713/smoke50_train_ufo.pkl
+    inference_path: humanoidverse/data/bones_seed_g1_220713/smoke50_full_ufo.pkl
+    weight: 1.0

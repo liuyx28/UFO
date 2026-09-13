@@ -250,3 +250,158 @@ UFO 支持基于 manifest 的多数据源混合。每个数据源之间的采样
 在 LaTeX 中，将上述条目加入 `.bib` 文件后，使用 `\cite{ufo2026}` 即可。
 
 UFO 当前基于 CC BY-NC 4.0 发布，主要面向非商业科研使用，具体以 [LICENSE](LICENSE) 文件为准。
+
+## 附录：Bones-SEED G1 → UFO 训练数据（本地复用）
+
+本附录记录把 Bones-SEED G1 CSV 转成 UFO `ufo_pkl`、拼片段、预览轨迹，以及用 G1 开训的常用命令。默认工作目录为仓库根目录 `UFO/`。
+
+### 0. 环境说明
+
+| 步骤 | 推荐 conda 环境 | 说明 |
+|------|-----------------|------|
+| CSV → motion_lib 单个 pkl | `isaaclab`（含 gear_sonic 依赖） | 调用 GR00T `gear_sonic` 转换脚本 |
+| 多个片段 pkl → 完整 UFO pkl | `ufo` | `humanoidverse.tools.merge_motion_lib_to_ufo` |
+| 训练 / smoke | `ufo` | `./run_train.sh` |
+
+示例路径（可按本机修改）：
+
+```text
+Bones-SEED CSV:   /home/liu/lyx/GR00T-WholeBodyControl/bones-seed/g1/csv/<SESSION>
+gear_sonic:       /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic
+motion_lib 输出:  .../gear_sonic/data/motion_lib_bones_seed/robot/<SESSION>/*.pkl
+UFO 数据输出:     humanoidverse/data/bones_seed_g1_<SESSION>/
+```
+
+### 1. CSV → 单个 motion 的 motion_lib pkl
+
+Bones-SEED 为「一个 CSV = 一段动作」。用 gear_sonic 脚本转成与 UFO 兼容的字段（`root_trans_offset` / `pose_aa` / `dof` / `root_rot` / `fps`），并按 `--individual` 每个动作一个 pkl：
+
+```bash
+conda activate isaaclab
+python /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data_process/convert_soma_csv_to_motion_lib.py \
+  --input /home/liu/lyx/GR00T-WholeBodyControl/bones-seed/g1/csv/220713 \
+  --output /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/motion_lib_bones_seed/robot/220713 \
+  --robot g1 \
+  --fps 30 \
+  --fps_source 120 \
+  --individual \
+  --num_workers 16
+```
+
+### 2. 把一个个片段 pkl 拼成完整 UFO pkl
+
+仓库内复用脚本：`humanoidverse/tools/merge_motion_lib_to_ufo.py`。
+
+合并 + 近 10s 裁剪 + 写 data manifest：
+
+```bash
+conda activate ufo
+cd /home/liu/lyx/UFO
+
+python -m humanoidverse.tools.merge_motion_lib_to_ufo \
+  --input /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/motion_lib_bones_seed/robot/220713 \
+  --out-dir humanoidverse/data/bones_seed_g1_220713 \
+  --name bones_seed_g1_220713 \
+  --clip-seconds 10 \
+  --write-manifest configs/data/bones_seed_g1_220713.yaml \
+  --force
+```
+
+只要完整大 pkl、不要裁剪：
+
+```bash
+python -m humanoidverse.tools.merge_motion_lib_to_ufo \
+  --input /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/motion_lib_bones_seed/robot/220713 \
+  --out-dir humanoidverse/data/bones_seed_g1_220713 \
+  --name bones_seed_g1_220713 \
+  --clip-seconds 0 \
+  --force
+```
+
+输出：
+
+| 文件 | 用途 |
+|------|------|
+| `humanoidverse/data/bones_seed_g1_220713/full_ufo.pkl` | 完整序列（推理 / 预览） |
+| `.../train_near10s_ufo.pkl` | 近 10s clip（训练，`--clip-seconds>0` 时生成） |
+| `configs/data/bones_seed_g1_220713.yaml` | `--write-manifest` 时生成 |
+
+### 3. 一键流水线（可选）
+
+封装了上面两步：`scripts/convert_bones_seed_to_ufo.sh`。
+
+```bash
+cd /home/liu/lyx/UFO
+bash scripts/convert_bones_seed_to_ufo.sh \
+  --session 220713 \
+  --bones-csv-root /home/liu/lyx/GR00T-WholeBodyControl/bones-seed/g1/csv \
+  --gear-sonic-root /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic \
+  --convert-env isaaclab \
+  --ufo-env ufo \
+  --force
+```
+
+若 motion_lib 片段 pkl 已存在，只跑合并：
+
+```bash
+bash scripts/convert_bones_seed_to_ufo.sh \
+  --session 220713 \
+  --bones-csv-root /home/liu/lyx/GR00T-WholeBodyControl/bones-seed/g1/csv \
+  --gear-sonic-root /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic \
+  --skip-convert \
+  --force
+```
+
+### 4. 轨迹预览（pkl → mp4）
+
+UFO 官方 `tracking_inference` 需要已训练 checkpoint。训前可用 MuJoCo 直接把 `full_ufo.pkl` 里的 `root`/`dof` 渲成视频。示例预览曾写在：
+
+```text
+humanoidverse/data/bones_seed_g1_220713/preview/*.mp4
+```
+
+要点：`root_rot` 为 xyzw，MuJoCo qpos 需 wxyz；关节顺序用 `configs/robots/g1_29dof.yaml` 的 control-joint / qpos 顺序。
+
+### 5. G1 UFO 训练
+
+Smoke：
+
+```bash
+conda activate ufo
+cd /home/liu/lyx/UFO
+
+./run_train.sh \
+  --agent fb \
+  --robot-config configs/robots/g1_29dof.yaml \
+  --data-manifest configs/data/bones_seed_g1_220713.yaml \
+  --gpu-ids single \
+  --smoke \
+  --work-dir /tmp/ufo_smoke_g1_bones
+```
+
+正式 FB 训练（按卡数调整 `CUDA_VISIBLE_DEVICES` / `--gpu-ids`）：
+
+```bash
+CUDA_VISIBLE_DEVICES=0 \
+./run_train.sh \
+  --agent fb \
+  --robot-config configs/robots/g1_29dof.yaml \
+  --data-manifest configs/data/bones_seed_g1_220713.yaml \
+  --gpu-ids single \
+  --num-envs 1024 \
+  --num-env-steps 192000000 \
+  --work-dir runs/ufo_fb_g1_bones220713 \
+  --update-z-every-step 100 \
+  --buffer-size 5120000
+```
+
+也可用官方 LaFAN（需先 `bash scripts/download_data.sh g1_lafan`）：
+
+```bash
+./run_train.sh \
+  --agent fb \
+  --data-manifest configs/data/example_mix.yaml \
+  --gpu-ids single \
+  --smoke \
+  --work-dir /tmp/ufo_smoke_g1
+```
