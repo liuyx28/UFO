@@ -382,17 +382,27 @@ cd /home/liu/lyx/UFO
 正式 FB 训练（按卡数调整 `CUDA_VISIBLE_DEVICES` / `--gpu-ids`）：
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 \
-./run_train.sh \
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m humanoidverse.train \
   --agent fb \
   --robot-config configs/robots/g1_29dof.yaml \
-  --data-manifest configs/data/bones_seed_g1_220713.yaml \
-  --gpu-ids single \
-  --num-envs 1024 \
+  --data-path humanoidverse/data/bones_seed_g1_lafan_scale_ufo/train_exact10s_ufo.pkl \
+  --gpu-ids all \
+  --num-envs 512 \
   --num-env-steps 192000000 \
-  --work-dir runs/ufo_fb_g1_bones220713 \
+  --work-dir runs/ufo_fb_g1_lafan_scale \
   --update-z-every-step 100 \
-  --buffer-size 5120000
+  --buffer-size 1280000 --use-wandb
+
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m humanoidverse.train \
+  --agent fb \
+  --robot-config configs/robots/g1_29dof.yaml \
+  --data-manifest configs/data/bones_seed_g1_lafan_scale.yaml \
+  --gpu-ids all \
+  --num-envs 512 \
+  --num-env-steps 192000000 \
+  --work-dir runs/ufo_fb_g1_lafan_scale \
+  --update-z-every-step 100 \
+  --buffer-size 1280000 --use-wandb
 ```
 
 也可用官方 LaFAN（需先 `bash scripts/download_data.sh g1_lafan`）：

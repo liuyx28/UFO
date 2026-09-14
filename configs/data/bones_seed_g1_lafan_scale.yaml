@@ -1,0 +1,10 @@
+# Bones-SEED G1 lafan-scale → UFO ufo_pkl
+# Train with:
+#   python -m humanoidverse.train --agent fb --robot-config configs/robots/g1_29dof.yaml \
+#     --data-manifest configs/data/bones_seed_g1_lafan_scale.yaml --gpu-ids single
+datasets:
+  - name: bones_seed_g1_lafan_scale
+    format: ufo_pkl
+    train_path: humanoidverse/data/bones_seed_g1_lafan_scale_ufo/train_exact10s_ufo.pkl
+    inference_path: humanoidverse/data/bones_seed_g1_lafan_scale_ufo/full_ufo.pkl
+    weight: 1.0
