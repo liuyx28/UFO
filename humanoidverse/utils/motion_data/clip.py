@@ -27,11 +27,14 @@ def clip_ufo_motion_dict(
     keep_short: bool = True,
     min_clip_seconds: float = 1.0,
     source_name: str = "",
+    max_clips_per_motion: int | None = None,
 ) -> dict[str, Any]:
     """Clip each motion while preserving all synchronized time-series fields.
 
     No fps resampling is performed. Each motion uses its own fps to convert
     seconds into frame counts.
+    ``max_clips_per_motion`` keeps only the first N windows per source motion
+    (G1 lafan-scale training used 1: the leading exact 10s clip).
     """
 
     validated = validate_ufo_motion_dict(data, source_name or "clip")
@@ -60,6 +63,11 @@ def clip_ufo_motion_dict(
                 windows.append((start, total_frames))
         elif keep_short and total_frames >= min_frames:
             windows.append((0, total_frames))
+
+        if max_clips_per_motion is not None:
+            if max_clips_per_motion <= 0:
+                raise ValueError(f"max_clips_per_motion must be > 0, got {max_clips_per_motion}")
+            windows = windows[:max_clips_per_motion]
 
         for clip_idx, (start, end) in enumerate(windows):
             new_key = f"{motion_key}__clip{clip_idx:03d}"

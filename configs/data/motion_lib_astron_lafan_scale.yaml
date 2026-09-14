@@ -1,0 +1,13 @@
+# Astron robot_filtered, same 862 source motions as G1 lafan-scale.
+# Training clips follow official LaFAN: non-overlapping exact 10s windows,
+# remainder shorter than 10s dropped (like lafan_29dof_10s-clipped.pkl).
+# Train with:
+#   python -m humanoidverse.train --agent fb --robot-config configs/robots/astron.yaml \
+#     --data-manifest configs/data/motion_lib_astron_lafan_scale.yaml --gpu-ids single
+robot_config: configs/robots/astron.yaml
+datasets:
+  - name: motion_lib_astron_lafan_scale
+    format: ufo_pkl
+    train_path: humanoidverse/data/motion_lib_astron_lafan_scale_ufo/train_10s-clipped_ufo.pkl
+    inference_path: humanoidverse/data/motion_lib_astron_lafan_scale_ufo/full_ufo.pkl
+    weight: 1.0

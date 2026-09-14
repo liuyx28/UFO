@@ -30,13 +30,29 @@ from humanoidverse.utils.motion_data.clip import clip_ufo_motion_dict
 from humanoidverse.utils.motion_data.schema import validate_ufo_motion_dict
 
 
-def _iter_input_pkls(input_path: Path) -> list[Path]:
+def _strip_clip_suffix(motion_key: str) -> str:
+    marker = "__clip"
+    if marker in motion_key:
+        head, tail = motion_key.rsplit(marker, 1)
+        if tail.isdigit():
+            return head
+    return motion_key
+
+
+def _load_wanted_keys(keys_from: Path) -> set[str]:
+    data = joblib.load(keys_from)
+    if not isinstance(data, dict):
+        raise TypeError(f"--keys-from must be a motion dict pkl, got {type(data)} in {keys_from}")
+    return {_strip_clip_suffix(str(key)) for key in data.keys()}
+
+
+def _iter_input_pkls(input_path: Path, *, recursive: bool = False) -> list[Path]:
     if input_path.is_file():
         if input_path.suffix != ".pkl":
             raise ValueError(f"--input file must be a .pkl, got {input_path}")
         return [input_path]
     if input_path.is_dir():
-        pkls = sorted(input_path.glob("*.pkl"))
+        pkls = sorted(input_path.rglob("*.pkl") if recursive else input_path.glob("*.pkl"))
         if not pkls:
             raise FileNotFoundError(f"No .pkl files under {input_path}")
         return pkls
@@ -56,9 +72,15 @@ def merge_motion_lib_pkls(
     *,
     source_name: str,
     allow_key_collision: bool = True,
+    recursive: bool = False,
+    wanted_keys: set[str] | None = None,
 ) -> dict[str, Any]:
     """Load one multi-motion pkl or many single-motion pkls into one UFO motion dict."""
-    pkls = _iter_input_pkls(input_path)
+    pkls = _iter_input_pkls(input_path, recursive=recursive)
+    if wanted_keys is not None:
+        pkls = [path for path in pkls if path.stem in wanted_keys]
+        if not pkls:
+            raise FileNotFoundError(f"No input pkls matched --keys-from under {input_path}")
     merged: dict[str, Any] = {}
     for path in tqdm(pkls, desc="merge pkls"):
         data = joblib.load(path)
@@ -70,6 +92,8 @@ def merge_motion_lib_pkls(
             if not isinstance(value, dict):
                 raise TypeError(f"Expected motion record dict for key={raw_key!r} in {path}")
             key = str(raw_key)
+            if wanted_keys is not None and key not in wanted_keys and path.stem not in wanted_keys:
+                continue
             if key in merged:
                 if not allow_key_collision:
                     raise ValueError(f"Duplicate motion key={key!r} from {path}")
@@ -77,6 +101,12 @@ def merge_motion_lib_pkls(
                 if key in merged:
                     raise ValueError(f"Duplicate motion key after disambiguation: {key!r}")
             merged[key] = _normalize_record(value)
+    if wanted_keys is not None:
+        missing = sorted(wanted_keys - set(merged.keys()))
+        if missing:
+            preview = ", ".join(missing[:8])
+            extra = f" ... (+{len(missing) - 8})" if len(missing) > 8 else ""
+            raise FileNotFoundError(f"{len(missing)} keys from --keys-from missing in input: {preview}{extra}")
     return validate_ufo_motion_dict(merged, source_name)
 
 
@@ -87,6 +117,7 @@ def write_manifest(
     inference_path: Path | None,
     out_path: Path,
     force: bool = False,
+    robot_config: Path | None = None,
 ) -> Path:
     if out_path.exists() and not force:
         raise FileExistsError(f"Manifest exists: {out_path}. Pass --force to overwrite.")
@@ -98,7 +129,9 @@ def write_manifest(
     }
     if inference_path is not None:
         item["inference_path"] = str(inference_path)
-    config = {"datasets": [item]}
+    config: dict[str, Any] = {"datasets": [item]}
+    if robot_config is not None:
+        config["robot_config"] = str(robot_config)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     OmegaConf.save(OmegaConf.create(config), out_path)
     return out_path
@@ -130,10 +163,33 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--drop-short", dest="keep_short", action="store_false")
     parser.add_argument("--min-clip-seconds", type=float, default=1.0)
     parser.add_argument(
+        "--max-clips-per-motion",
+        type=int,
+        default=None,
+        help="Keep only the first N clips per source motion (e.g. 1 for exact leading 10s)",
+    )
+    parser.add_argument(
+        "--recursive",
+        action="store_true",
+        help="Search --input directories recursively for .pkl files",
+    )
+    parser.add_argument(
+        "--keys-from",
+        type=Path,
+        default=None,
+        help="Only keep motions whose keys appear in this UFO/motion_lib pkl",
+    )
+    parser.add_argument(
         "--write-manifest",
         type=Path,
         default=None,
         help="Optional path to write a UFO data manifest YAML",
+    )
+    parser.add_argument(
+        "--manifest-robot-config",
+        type=Path,
+        default=None,
+        help="Optional robot_config path to embed in the written manifest",
     )
     parser.add_argument("--force", action="store_true", help="Overwrite existing outputs / manifest")
     parser.add_argument(
@@ -153,10 +209,16 @@ def main(argv: list[str] | None = None) -> None:
             raise FileExistsError(f"Output exists: {path}. Pass --force to overwrite.")
 
     print(f"[merge] input={args.input}")
+    wanted_keys = None
+    if args.keys_from is not None:
+        wanted_keys = _load_wanted_keys(args.keys_from.expanduser().resolve())
+        print(f"[merge] keys_from={args.keys_from} wanted={len(wanted_keys)}")
     merged = merge_motion_lib_pkls(
         args.input.expanduser().resolve(),
         source_name=args.name,
         allow_key_collision=not args.no_key_collision_rename,
+        recursive=args.recursive,
+        wanted_keys=wanted_keys,
     )
     print(f"[merge] motions={len(merged)}")
     dump_ufo_pkl(merged, full_path, f"{args.name}:full")
@@ -165,7 +227,10 @@ def main(argv: list[str] | None = None) -> None:
     train_out = full_path
     if args.clip_seconds > 0.0:
         stride = args.stride_seconds if args.stride_seconds is not None else args.clip_seconds
-        print(f"[clip] clip_seconds={args.clip_seconds} stride_seconds={stride}")
+        print(
+            f"[clip] clip_seconds={args.clip_seconds} stride_seconds={stride} "
+            f"max_clips_per_motion={args.max_clips_per_motion}"
+        )
         train = clip_ufo_motion_dict(
             merged,
             clip_seconds=args.clip_seconds,
@@ -173,6 +238,7 @@ def main(argv: list[str] | None = None) -> None:
             keep_short=args.keep_short,
             min_clip_seconds=args.min_clip_seconds,
             source_name=f"{args.name}:train",
+            max_clips_per_motion=args.max_clips_per_motion,
         )
         dump_ufo_pkl(train, train_path, f"{args.name}:train")
         print(f"[clip] clips={len(train)}")
@@ -188,6 +254,7 @@ def main(argv: list[str] | None = None) -> None:
             inference_path=full_path,
             out_path=args.write_manifest.expanduser().resolve(),
             force=args.force,
+            robot_config=args.manifest_robot_config,
         )
         print(f"[manifest] wrote {manifest_path}")
 
