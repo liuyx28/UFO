@@ -1,5 +1,5 @@
 name: astron
-xml_path: /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/assets/robot_description/mjcf/walker_astron_v1.xml
+xml_path: humanoidverse/data/robots/astron/walker_astron_v1.xml
 base_body: base_link
 root_quat_order: xyzw
 coordinate_system: z_up
@@ -432,7 +432,7 @@ training:
         friction: 0.0
         damping: 0.0
 metadata:
-  generated_from_xml: /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/assets/robot_description/mjcf/walker_astron_v1.xml
+  generated_from_xml: humanoidverse/data/robots/astron/walker_astron_v1.xml
   generated_by: humanoidverse.tools.robot_inspect
   review_status: draft
   warnings:
@@ -543,7 +543,7 @@ metadata:
     - This config is XML-derived draft output. Review semantic fields, PD gains, default
       pose, actuator parameters, contact bodies, and reward/termination-related fields
       before formal training.
-  urdf_source: /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/assets/robot_description/urdf/astron/astron.urdf
+  urdf_source: humanoidverse/data/robots/astron/astron.urdf
   matched_urdf_joints:
     - L_hip_pitch_joint
     - L_hip_roll_joint

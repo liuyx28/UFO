@@ -1,0 +1,11 @@
+# Astron motion_lib sample → UFO ufo_pkl
+# Train with:
+#   ./run_train.sh --agent fb --robot-config configs/robots/astron.yaml \
+#     --data-manifest configs/data/motion_lib_astron.yaml --gpu-ids single
+robot_config: configs/robots/astron.yaml
+datasets:
+  - name: motion_lib_astron
+    format: ufo_pkl
+    train_path: humanoidverse/data/motion_lib_astron/train_near10s_ufo.pkl
+    inference_path: humanoidverse/data/motion_lib_astron/full_ufo.pkl
+    weight: 1.0

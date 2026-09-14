@@ -494,14 +494,14 @@ robot:
     linear_damping: 0.0
     urdf_file: null
     usd_file: null
-    xml_file: /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/assets/robot_description/mjcf/walker_astron_v1.xml
+    xml_file: humanoidverse/data/robots/astron/walker_astron_v1.xml
     robot_type: astron
     self_collisions: 0
     default_dof_drive_mode: 3
     fix_base_link: false
   motion:
     asset:
-      assetRoot: /home/liu/lyx/GR00T-WholeBodyControl/gear_sonic/data/assets/robot_description/mjcf
+      assetRoot: humanoidverse/data/robots/astron/
       assetFileName: walker_astron_v1.xml
       urdfFileName: null
     humanoid_type: astron

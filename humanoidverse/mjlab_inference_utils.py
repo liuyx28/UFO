@@ -422,7 +422,16 @@ def to_rgb_uint8(frame: Any) -> np.ndarray:
 
 
 def compile_inference_mj_model(xml_path: Path):
+    """Compile MJCF for offscreen qpos playback with a clean, non-colliding floor.
+
+    Some robot XMLs (e.g. Astron) already ship a reflective checker floor + lights.
+    Stacking another plane on top causes z-fighting and streaky reflections, so any
+    existing worldbody plane geoms are removed before adding ``inference_floor``.
+    """
     spec = mujoco.MjSpec.from_file(str(xml_path))
+    for geom in list(spec.worldbody.geoms):
+        if int(geom.type) == int(mujoco.mjtGeom.mjGEOM_PLANE):
+            spec.delete(geom)
     spec.worldbody.add_geom(
         name="inference_floor",
         type=mujoco.mjtGeom.mjGEOM_PLANE,
