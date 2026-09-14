@@ -234,7 +234,7 @@ def build_ufo_mjlab_config(
         wandb_run_name=wandb_run_name or f"ufo_{agent}",
         load_expert_data_from_motion_lib=True,
         buffer_device="cuda" if device.startswith("cuda") else "cpu",
-        disable_tqdm=True,
+        disable_tqdm=False,
         evaluations=evaluations,
         eval_every_steps=train_runtime["eval_every_steps"],
         distributed_rank=distributed_rank,
