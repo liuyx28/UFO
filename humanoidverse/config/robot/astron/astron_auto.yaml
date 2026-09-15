@@ -496,7 +496,7 @@ robot:
     usd_file: null
     xml_file: humanoidverse/data/robots/astron/walker_astron_v1.xml
     robot_type: astron
-    self_collisions: 0
+    self_collisions: 1 # 1 to disable, 0 to enable self collisions
     default_dof_drive_mode: 3
     fix_base_link: false
   motion:
@@ -506,7 +506,7 @@ robot:
       urdfFileName: null
     humanoid_type: astron
     bias_offset: false
-    has_self_collision: true
+    has_self_collision: false
     has_mesh: false
     has_jt_limit: false
     has_dof_subset: true
