@@ -34,6 +34,8 @@ humanoidverse/data/bones_seed_g1_*/full_ufo.pkl
 humanoidverse/data/bones_seed_g1_*/train_*.pkl
 humanoidverse/data/bones_seed_g1_*/preview/
 humanoidverse/data/motion_lib_astron/
+humanoidverse/data/motion_lib_astron_*/
+humanoidverse/data/**/*_ufo.pkl
 humanoidverse/data/**/preview/
 
 # Keep tiny smoke subsets for local debug (tracked)
