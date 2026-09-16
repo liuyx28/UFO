@@ -16,7 +16,7 @@ domain_rand:
     z : [-0.02, 0.02]
 
   # link mass
-  randomize_link_mass : True
+  randomize_link_mass : False
   link_mass_range : [0.95, 1.05]
 
   # pd gain
@@ -43,5 +43,5 @@ domain_rand:
   ctrl_delay_step_range : [0, 1] # integer max real delay is 90ms
 
   # Mimicing BeyondMimic: https://github.com/HybridRobotics/whole_body_tracking/blob/dcecabd8c24c68f59d143fdf8e3a670f420c972d/source/whole_body_tracking/whole_body_tracking/tasks/tracking/tracking_env_cfg.py#L170
-  randomize_default_dof_pos : True
+  randomize_default_dof_pos : False
   default_dof_pos_noise_range : [-0.02, 0.02]

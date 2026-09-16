@@ -139,13 +139,13 @@ TeCH 在早期 UFO 版本中曾经叫 TLDR。`--agent tldr` 仍然保留为 `--a
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 \
-uv run python -m humanoidverse.tracking_inference \
+python -m humanoidverse.tracking_inference \
   --model-folder runs/ufo_fb_g1 \
   --data-path /path/to/full_motions.pkl \
   --device cuda:0 \
   --headless \
   --save-mp4 \
-  --motion-list 0
+  --motion-list 0 --robot-config configs/robots/astron.yaml
 ```
 
 输出会写到 `<model-folder>/tracking_inference/`。

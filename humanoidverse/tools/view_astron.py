@@ -124,11 +124,12 @@ def main(argv: list[str] | None = None) -> None:
     apply_default_pose(model, data)
     print_model_summary(model)
 
-    with mujoco.viewer.launch_passive(model, data) as viewer:
+    viewer = mujoco.viewer.launch_passive(model, data)
+    try:
         viewer.cam.distance = 3.0
         viewer.cam.azimuth = 135.0
         viewer.cam.elevation = -18.0
-        print("[INFO] Viewer opened. Close the window to exit.", flush=True)
+        print("[INFO] Viewer opened. Close the window or Ctrl+C to exit.", flush=True)
         while viewer.is_running():
             if args.simulate:
                 mujoco.mj_step(model, data)
@@ -136,6 +137,10 @@ def main(argv: list[str] | None = None) -> None:
                 mujoco.mj_forward(model, data)
             viewer.sync()
             time.sleep(model.opt.timestep)
+    except KeyboardInterrupt:
+        print("\n[INFO] Interrupted.", flush=True)
+    finally:
+        viewer.close()
 
 
 if __name__ == "__main__":

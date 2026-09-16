@@ -31,7 +31,7 @@ obs:
   obs_scales: {
     actions: 1.0,
     dof_pos: 1.0,
-    dof_vel: 1.0,
+    dof_vel: 0.05,
     max_local_self: 1.0,
     base_lin_vel: 1.0,
     base_ang_vel: 0.25,

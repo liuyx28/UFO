@@ -17,6 +17,7 @@ tea_debug.log
 *.log
 
 # Local exported model / tracking-inference dumps at repo root
+/ufo_*_infer/
 /ufo_*_inference/
 
 # OS/editor
