@@ -391,7 +391,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m humanoidverse.train \
   --num-env-steps 192000000 \
   --work-dir runs/ufo_fb_g1_lafan_scale \
   --update-z-every-step 100 \
-  --buffer-size 1280000 --use-wandb
+  --buffer-size 1280000 --use-wandb --wandb-run-name ufo_fb_g1_lafan_scale
 
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m humanoidverse.train \
   --agent fb \
@@ -402,7 +402,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m humanoidverse.train \
   --num-env-steps 192000000 \
   --work-dir runs/ufo_fb_g1_lafan_scale \
   --update-z-every-step 100 \
-  --buffer-size 1280000 --use-wandb
+  --buffer-size 1280000 --use-wandb --wandb-run-name ufo_fb_g1_lafan_scale
 ```
 
 也可用官方 LaFAN（需先 `bash scripts/download_data.sh g1_lafan`）：
