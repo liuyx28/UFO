@@ -408,10 +408,5 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m humanoidverse.train \
 也可用官方 LaFAN（需先 `bash scripts/download_data.sh g1_lafan`）：
 
 ```bash
-./run_train.sh \
-  --agent fb \
-  --data-manifest configs/data/example_mix.yaml \
-  --gpu-ids single \
-  --smoke \
-  --work-dir /tmp/ufo_smoke_g1
+python -m humanoidverse.train   --agent fb   --robot-config configs/robots/g1_29dof.yaml   --data-manifest configs/data/bones_seed_g1_220713_smoke50.yaml   --gpu-ids single   --smoke   --work-dir /tmp/ufo_smoke_g1_bones --buffer-size 32 --num-seed-steps 0
 ```

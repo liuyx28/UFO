@@ -112,6 +112,7 @@ def build_ufo_mjlab_config(
     clip_grad_norm: float = 0.0,
     cartwheel_aux_safe: bool = False,
     num_agent_updates: int | None = None,
+    num_seed_steps: int | None = None,
     robot_config: str | Path | None = None,
 ) -> TrainConfig:
     agent = canonical_agent_name(agent)
@@ -165,6 +166,10 @@ def build_ufo_mjlab_config(
         if num_agent_updates <= 0:
             raise ValueError("num_agent_updates must be positive")
         train_runtime["num_agent_updates"] = int(num_agent_updates)
+    if num_seed_steps is not None:
+        if num_seed_steps < 0:
+            raise ValueError("num_seed_steps must be non-negative")
+        train_runtime["num_seed_steps"] = int(num_seed_steps)
     hydra_overrides = [
         f"robot={robot_training.hydra_robot}",
         f"robot.control.action_scale={robot_training.action_scale}",
@@ -318,6 +323,7 @@ def run_train(args: argparse.Namespace, log_dir: Path) -> None:
         clip_grad_norm=args.clip_grad_norm,
         cartwheel_aux_safe=bool(args.cartwheel_aux_safe),
         num_agent_updates=args.num_agent_updates,
+        num_seed_steps=args.num_seed_steps,
         robot_config=args.robot_config,
     )
     print(
@@ -327,7 +333,8 @@ def run_train(args: argparse.Namespace, log_dir: Path) -> None:
         f"data_path={cfg.env.lafan_tail_path}, data_mix_weights={cfg.env.data_mix_weights}, "
         f"num_envs_per_rank={args.num_envs}, global_parallel_envs={args.num_envs * world_size}, "
         f"num_env_steps_global={args.num_env_steps}, buffer_size_per_rank={cfg.buffer_size}, "
-        f"num_agent_updates={cfg.num_agent_updates}, update_agent_every_local={cfg.update_agent_every}, "
+        f"num_seed_steps_local={cfg.num_seed_steps}, num_agent_updates={cfg.num_agent_updates}, "
+        f"update_agent_every_local={cfg.update_agent_every}, "
         f"cartwheel_aux_safe={args.cartwheel_aux_safe}, lr_scale={args.lr_scale}, clip_grad_norm={args.clip_grad_norm}, "
         f"disable_dr={cfg.env.disable_domain_randomization}, disable_obs_noise={cfg.env.disable_obs_noise}, "
         f"compile={cfg.agent.compile}",
@@ -462,6 +469,15 @@ def parse_args() -> argparse.Namespace:
             "2048 envs/GPU and 64 with 4096 envs/GPU to match the 1024 envs/GPU update density."
         ),
     )
+    parser.add_argument(
+        "--num-seed-steps",
+        type=int,
+        default=None,
+        help=(
+            "Override local env steps that use random actions before policy rollout/updates. "
+            "Defaults to the agent preset value (10240 for FB/TeCH)."
+        ),
+    )
     parser.add_argument("--disable-dr", action="store_true", help="Disable domain randomization for training.")
     parser.add_argument("--disable-obs-noise", action="store_true", help="Disable observation noise for training.")
     parser.add_argument("--lr-scale", type=float, default=1.0, help="Scale FB learning rates. TeCH preset ignores this value.")
@@ -488,7 +504,7 @@ def parse_args() -> argparse.Namespace:
     if args.update_z_every_step is None:
         args.update_z_every_step = _default_update_z_every_step(args.agent)
     if args.smoke:
-        args.num_envs = min(args.num_envs, 16)
+        args.num_envs = min(args.num_envs, 4)
         args.num_env_steps = min(args.num_env_steps, 2048)
         args.use_wandb = False
     manifest_robot_config = None
@@ -522,6 +538,8 @@ def parse_args() -> argparse.Namespace:
         raise ValueError("--buffer-size must be positive")
     if args.num_agent_updates is not None and args.num_agent_updates <= 0:
         raise ValueError("--num-agent-updates must be positive")
+    if args.num_seed_steps is not None and args.num_seed_steps < 0:
+        raise ValueError("--num-seed-steps must be non-negative")
     if args.lr_scale <= 0:
         raise ValueError("--lr-scale must be positive")
     if args.clip_grad_norm < 0:
