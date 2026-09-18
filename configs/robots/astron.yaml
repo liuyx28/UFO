@@ -1,5 +1,5 @@
 name: astron
-xml_path: humanoidverse/data/robots/astron/walker_astron_v1.xml
+xml_path: humanoidverse/data/robots/astron/walker_astron_v1_self_collision.xml
 base_body: base_link
 root_quat_order: xyzw
 coordinate_system: z_up
