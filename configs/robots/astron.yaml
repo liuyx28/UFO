@@ -49,7 +49,6 @@ key_bodies:
   - waist_yaw_link
   - waist_pitch_link
   - waist_roll_link
-  - torso_link
   - L_wrist_roll_link
   - R_wrist_roll_link
 default_dof_pos: {}
@@ -61,20 +60,21 @@ training:
       - L_ankle_roll_link
       - R_ankle_roll_link
     undesired_contact_bodies:
+      - base_link
+      - waist_roll_link
       - L_hip_pitch_link
       - L_hip_roll_link
       - L_hip_yaw_link
       - R_hip_pitch_link
       - R_hip_roll_link
       - R_hip_yaw_link
-      - torso_link
       - L_shoulder_pitch_link
       - L_shoulder_roll_link
       - L_shoulder_yaw_link
       - R_shoulder_pitch_link
       - R_shoulder_roll_link
       - R_shoulder_yaw_link
-    torso_name: torso_link
+    torso_name: waist_roll_link
     left_ankle_dof_names:
       - L_ankle_pitch_joint
       - L_ankle_roll_joint
