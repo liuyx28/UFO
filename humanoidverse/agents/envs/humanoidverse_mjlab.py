@@ -1086,7 +1086,7 @@ class HumanoidVerseMjlabCore:
                 if torch.any(mask):
                     root_pos = root_pos.clone()
                     root_rot = root_rot.clone()
-                    root_pos[mask, 2] = 0.5
+                    root_pos[mask, 2] = 0.6
                     sign = 1 if random.random() < 0.5 else -1
                     rot_quat = quat_from_angle_axis(
                         torch.tensor(sign * (-torch.pi / 2), device=self.device),

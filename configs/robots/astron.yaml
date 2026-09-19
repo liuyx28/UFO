@@ -54,7 +54,9 @@ key_bodies:
 default_dof_pos: {}
 training:
   hydra_robot: astron/astron_auto
-  hydra_overrides: []
+  hydra_overrides: 
+    - env.config.lie_down_init=True
+    - env.config.lie_down_init_prob=0.3
   semantics:
     contact_bodies:
       - L_ankle_roll_link
