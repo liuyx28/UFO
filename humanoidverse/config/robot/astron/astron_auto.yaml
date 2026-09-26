@@ -477,7 +477,7 @@ robot:
       R_wrist_roll_joint: 0.0
     action_scale: 0.5
     action_clip_value: 5.0
-    action_rescale: true
+    action_rescale: false
     clip_torques: true
     normalize_action: true
     normalize_action_from: 1.0

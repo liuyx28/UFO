@@ -1,5 +1,5 @@
 name: astron
-xml_path: humanoidverse/data/robots/astron/walker_astron_v1_self_collision.xml
+xml_path: humanoidverse/data/robots/astron/walker_astron_v1.xml
 base_body: base_link
 root_quat_order: xyzw
 coordinate_system: z_up
@@ -57,6 +57,7 @@ training:
   hydra_overrides: 
     - env.config.lie_down_init=True
     - env.config.lie_down_init_prob=0.3
+    - robot.control.action_rescale=false
   semantics:
     contact_bodies:
       - L_ankle_roll_link
